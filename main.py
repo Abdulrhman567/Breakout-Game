@@ -3,6 +3,7 @@ import os
 import sys
 
 pygame.font.init()
+pygame.mixer.init()
 
 # RESOLUTION AND FPS
 SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 600
@@ -10,6 +11,9 @@ FPS = 60
 
 # FONTS
 GAME_OVER_FONT = pygame.font.SysFont("comicsans", 100)
+
+# SOUNDS
+BALL_BOUNCE_SOUND = pygame.mixer.Sound(os.path.join("Assets", "Blip_1-Surround-147.wav"))
 
 # EVENTS
 BRICKS_EMPTY = pygame.USEREVENT + 1
@@ -83,6 +87,7 @@ class Game:
         :param collided_rect: the rect that the ball will collide with
         :return: None
         """
+        BALL_BOUNCE_SOUND.play()
         collision_tolerance = 10
         if abs(collided_rect.top - self.ball.rect.bottom) < collision_tolerance and self.ball_vel[1] > 0:
             self.ball_vel[1] *= -1
@@ -112,8 +117,10 @@ class Game:
         """
         self.ball.rect = self.ball.rect.move(self.ball_vel)
         if self.ball.rect.colliderect(self.top_border):
+            BALL_BOUNCE_SOUND.play()
             self.ball_vel[1] *= -1
         if self.ball.rect.colliderect(self.left_border) or self.ball.rect.colliderect(self.right_border):
+            BALL_BOUNCE_SOUND.play()
             self.ball_vel[0] *= -1
         if self.ball.rect.y > SCREEN_HEIGHT:
             self.ball.rect.x = self.bat.rect.x + 40 - 17/2
